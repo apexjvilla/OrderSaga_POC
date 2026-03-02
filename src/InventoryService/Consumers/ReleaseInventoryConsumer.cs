@@ -1,5 +1,6 @@
 ﻿using Contracts.Commands;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 
 namespace InventoryService.Consumers
 {
