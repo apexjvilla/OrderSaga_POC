@@ -20,7 +20,7 @@ namespace OrderService.Migrations
                     InventoryReserved = table.Column<bool>(type: "bit", nullable: false),
                     PaymentProcessed = table.Column<bool>(type: "bit", nullable: false),
                     ShippingCreated = table.Column<bool>(type: "bit", nullable: false),
-                    CurrentState = table.Column<int>(type: "int", nullable: false),
+                    CurrentState = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>

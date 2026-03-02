@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using PaymentService.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
+
+    // Consumers
+    x.AddConsumer<ProcessPaymentConsumer>();
+    x.AddConsumer<RefundPaymentConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {

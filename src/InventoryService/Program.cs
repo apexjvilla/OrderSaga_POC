@@ -1,3 +1,4 @@
+using InventoryService.Consumers;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
+
+    // Consumers
+    x.AddConsumer<ReserveInventoryConsumer>();
+    x.AddConsumer<ReleaseInventoryConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {

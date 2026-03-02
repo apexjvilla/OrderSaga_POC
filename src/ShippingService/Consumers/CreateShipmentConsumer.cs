@@ -2,7 +2,6 @@
 using Contracts.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace ShippingService.Consumers
 {
@@ -17,11 +16,11 @@ namespace ShippingService.Consumers
             _logger.LogInformation(
                 $"CreateShipment received CorrelationId={msg.CorrelationId} OrderId={msg.OrderId} Address={msg.Address}");
 
-            var canShip = String.IsNullOrEmpty(msg.Address);
+            var canShip = !String.IsNullOrEmpty(msg.Address);
 
             if (!canShip)
             {
-                await context.Publish(new ShippmentFailed(
+                await context.Publish(new ShipmentFailed(
                     msg.CorrelationId,
                     msg.OrderId,
                     "Invalid address"));
@@ -33,7 +32,7 @@ namespace ShippingService.Consumers
 
             var tracking = $"TRK-{Guid.NewGuid():N}".Substring(0, 12).ToUpperInvariant();
 
-            await context.Publish(new ShippmentCreated(
+            await context.Publish(new ShipmentCreated(
                 msg.CorrelationId,
                 msg.OrderId,
                 tracking));

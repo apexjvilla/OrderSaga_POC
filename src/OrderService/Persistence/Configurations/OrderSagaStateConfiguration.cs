@@ -11,7 +11,7 @@ namespace OrderService.Persistence.Configurations
             builder.HasKey(x => x.CorrelationId);
 
             builder.Property(x => x.CurrentState)
-                .HasConversion<int>()
+                .HasMaxLength(64)
                 .IsRequired();
 
             builder.Property(x => x.CreatedAt)

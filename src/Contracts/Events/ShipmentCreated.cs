@@ -1,8 +1,8 @@
 ﻿namespace Contracts.Events
 {
-    public record ShippmentFailed(
+    public record ShipmentCreated(
         Guid CorrelationId,
         Guid OrderId,
-        string Reason
+        string TrackingNumber
         );
 }

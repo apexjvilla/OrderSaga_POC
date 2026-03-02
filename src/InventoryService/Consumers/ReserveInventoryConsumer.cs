@@ -32,7 +32,6 @@ namespace InventoryService.Consumers
 
             await context.Publish(new InventoryReserved(
                 msg.CorrelationId,
-                msg.OrderId));
-            ;        }
+                msg.OrderId));        }
     }
 }
