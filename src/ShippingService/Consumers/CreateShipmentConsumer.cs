@@ -16,9 +16,9 @@ namespace ShippingService.Consumers
             _logger.LogInformation(
                 $"CreateShipment received CorrelationId={msg.CorrelationId} OrderId={msg.OrderId} Address={msg.Address}");
 
-            var canShip = !String.IsNullOrEmpty(msg.Address);
+            var canShip = !String.IsNullOrWhiteSpace(msg.Address);
 
-            if (!canShip)
+            if (canShip)
             {
                 await context.Publish(new ShipmentFailed(
                     msg.CorrelationId,

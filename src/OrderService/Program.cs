@@ -22,7 +22,7 @@ builder.Services.AddMassTransit(x =>
 
             r.AddDbContext<DbContext, SagaDbContext>((provider, cfg) =>
             {
-                cfg.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                cfg.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
             });
         });
 

@@ -20,8 +20,8 @@ namespace OrderService.Domain.Sagas
         public Event<InventoryRejected> InventoryRejected { get; private set; } = null!;
         public Event<PaymentSucceeded> PaymentSucceeded { get; private set; } = null!;
         public Event<PaymentFailed> PaymentFailed { get; private set; } = null!;
-        public Event<ShipmentCreated> ShippmentCreated { get; private set; } = null!;
-        public Event<ShipmentFailed> ShippmentFailed { get; private set; } = null!;
+        public Event<ShipmentCreated> ShipmentCreated { get; private set; } = null!;
+        public Event<ShipmentFailed> ShipmentFailed { get; private set; } = null!;
 
         public OrderStateMachine(ILogger<OrderStateMachine> logger)
         {
@@ -54,10 +54,10 @@ namespace OrderService.Domain.Sagas
             Event(() => PaymentFailed,
                 x => x.CorrelateById(m => m.Message.CorrelationId));
 
-            Event(() => ShippmentCreated,
+            Event(() => ShipmentCreated,
                 x => x.CorrelateById(m => m.Message.CorrelationId));
 
-            Event(() => ShippmentFailed,
+            Event(() => ShipmentFailed,
                 x => x.CorrelateById(m => m.Message.CorrelationId));
 
             Initially(
@@ -146,7 +146,7 @@ namespace OrderService.Domain.Sagas
             );
 
             During(WaitingForShipping,
-                When(ShippmentCreated)
+                When(ShipmentCreated)
                     .Then(ctx =>
                     {
                         ctx.Saga.ShippingCreated = true;
@@ -158,7 +158,7 @@ namespace OrderService.Domain.Sagas
                     .TransitionTo(Completed)
                     .Finalize(),
 
-                When(ShippmentFailed)
+                When(ShipmentFailed)
                     .Then(ctx =>
                     {
                         _logger.LogWarning(
