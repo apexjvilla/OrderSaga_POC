@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Events
 {
-    public record PaymentSucceded(
+    public record PaymentSucceeded(
         Guid CorrelationId,
         Guid OrderId
         );

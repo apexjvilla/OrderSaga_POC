@@ -12,7 +12,7 @@ using OrderService.Persistence;
 namespace OrderService.Migrations
 {
     [DbContext(typeof(SagaDbContext))]
-    [Migration("20260302045155_Initial")]
+    [Migration("20260302195126_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -36,8 +36,10 @@ namespace OrderService.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .HasColumnType("int");
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("InventoryReserved")
                         .HasColumnType("bit");

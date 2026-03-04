@@ -33,8 +33,10 @@ namespace OrderService.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("CurrentState")
-                        .HasColumnType("int");
+                    b.Property<string>("CurrentState")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<bool>("InventoryReserved")
                         .HasColumnType("bit");
