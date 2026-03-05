@@ -16,7 +16,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: saga-sqlserver
     ports:
-      - "1433:1433"
+      - "5282:1433"
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "2026@Pass.Word"
