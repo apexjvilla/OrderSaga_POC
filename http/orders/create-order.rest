@@ -1,0 +1,8 @@
+### Create Order
+POST http://localhost:5001/orders
+Content-Type: application/json
+
+{
+  "customerId": "customer-1",
+  "amount": 150
+}
