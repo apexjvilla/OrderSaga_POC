@@ -28,7 +28,7 @@ namespace ShippingService.Consumers
                 return;
             }
 
-            await Task.Delay(2500);
+            await Task.Delay(250000);
 
             var tracking = $"TRK-{Guid.NewGuid():N}".Substring(0, 12).ToUpperInvariant();
 
