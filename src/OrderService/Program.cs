@@ -1,10 +1,19 @@
 using Contracts.Events;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using OrderService.Domain.Sagas;
+using OrderService.Domain.Sagas.Activities;
+using OrderService.Infrastructure.Mongo;
 using OrderService.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
+
+BsonSerializer.RegisterSerializer(
+    new GuidSerializer(GuidRepresentation.Standard)
+);
 
 // Add dbContext
 builder.Services.AddDbContext<SagaDbContext>(options =>
@@ -41,6 +50,11 @@ builder.Services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(context);
     });
 });
+
+// Add Mongo db
+builder.Services.AddSingleton<MongoSagaLogger>();
+
+builder.Services.AddScoped(typeof(LogOrderSagaActivity<>));
 
 builder.Services.AddControllers();
 

@@ -2,6 +2,7 @@
 using Contracts.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using OrderService.Domain.Sagas.Activities;
 
 namespace OrderService.Domain.Sagas
 {
@@ -42,23 +43,12 @@ namespace OrderService.Domain.Sagas
                 });
             });
 
-            Event(() => InventoryReserved,
-                x => x.CorrelateById(m => m.Message.CorrelationId));
-
-            Event(() => InventoryRejected,
-                x => x.CorrelateById(m => m.Message.CorrelationId));
-
-            Event(() => PaymentSucceeded,
-                x => x.CorrelateById(m => m.Message.CorrelationId));
-
-            Event(() => PaymentFailed,
-                x => x.CorrelateById(m => m.Message.CorrelationId));
-
-            Event(() => ShipmentCreated,
-                x => x.CorrelateById(m => m.Message.CorrelationId));
-
-            Event(() => ShipmentFailed,
-                x => x.CorrelateById(m => m.Message.CorrelationId));
+            Event(() => InventoryReserved, x => x.CorrelateById(m => m.Message.CorrelationId));
+            Event(() => InventoryRejected, x => x.CorrelateById(m => m.Message.CorrelationId));
+            Event(() => PaymentSucceeded, x => x.CorrelateById(m => m.Message.CorrelationId));
+            Event(() => PaymentFailed, x => x.CorrelateById(m => m.Message.CorrelationId));
+            Event(() => ShipmentCreated, x => x.CorrelateById(m => m.Message.CorrelationId));
+            Event(() => ShipmentFailed, x => x.CorrelateById(m => m.Message.CorrelationId));
 
             Initially(
                 When(OrderSubmitted)
@@ -71,6 +61,7 @@ namespace OrderService.Domain.Sagas
                             ctx.Saga.CorrelationId,
                             ctx.Saga.OrderId);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<OrderSubmitted>>())
                     .Send(new Uri("queue:reserve-inventory"), ctx =>
                         new ReserveInventory(
                             ctx.Saga.CorrelationId,
@@ -81,6 +72,7 @@ namespace OrderService.Domain.Sagas
             );
 
             During(WaitingForInventory,
+
                 When(InventoryReserved)
                     .Then(ctx =>
                     {
@@ -90,6 +82,7 @@ namespace OrderService.Domain.Sagas
                             "Inventory reserved CorrelationId={CorrelationId}",
                             ctx.Saga.CorrelationId);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<InventoryReserved>>())
                     .Send(new Uri("queue:process-payment"), ctx =>
                         new ProcessPayment(
                             ctx.Saga.CorrelationId,
@@ -106,11 +99,13 @@ namespace OrderService.Domain.Sagas
                             ctx.Saga.CorrelationId,
                             ctx.Message.Reason);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<InventoryRejected>>())
                     .TransitionTo(Failed)
                     .Finalize()
             );
 
             During(WaitingForPayment,
+
                 When(PaymentSucceeded)
                     .Then(ctx =>
                     {
@@ -120,6 +115,7 @@ namespace OrderService.Domain.Sagas
                             "Payment succeeded CorrelationId={CorrelationId}",
                             ctx.Saga.CorrelationId);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<PaymentSucceeded>>())
                     .Send(new Uri("queue:create-shipment"), ctx =>
                         new CreateShipment(
                             ctx.Saga.CorrelationId,
@@ -135,6 +131,7 @@ namespace OrderService.Domain.Sagas
                             ctx.Saga.CorrelationId,
                             ctx.Message.Reason);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<PaymentFailed>>())
                     .Send(new Uri("queue:release-inventory"), ctx =>
                         new ReleaseInventory(
                             ctx.Saga.CorrelationId,
@@ -146,6 +143,7 @@ namespace OrderService.Domain.Sagas
             );
 
             During(WaitingForShipping,
+
                 When(ShipmentCreated)
                     .Then(ctx =>
                     {
@@ -155,6 +153,7 @@ namespace OrderService.Domain.Sagas
                             "Shipment created CorrelationId={CorrelationId}",
                             ctx.Saga.CorrelationId);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<ShipmentCreated>>())
                     .TransitionTo(Completed)
                     .Finalize(),
 
@@ -166,6 +165,7 @@ namespace OrderService.Domain.Sagas
                             ctx.Saga.CorrelationId,
                             ctx.Message.Reason);
                     })
+                    .Activity(x => x.OfType<LogOrderSagaActivity<ShipmentFailed>>())
                     .Send(new Uri("queue:refund-payment"), ctx =>
                         new RefundPayment(
                             ctx.Saga.CorrelationId,
