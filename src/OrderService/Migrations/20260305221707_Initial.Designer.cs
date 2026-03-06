@@ -12,7 +12,7 @@ using OrderService.Persistence;
 namespace OrderService.Migrations
 {
     [DbContext(typeof(SagaDbContext))]
-    [Migration("20260302195126_Initial")]
+    [Migration("20260305221707_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

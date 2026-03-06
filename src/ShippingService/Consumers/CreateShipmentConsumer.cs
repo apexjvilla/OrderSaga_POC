@@ -16,9 +16,9 @@ namespace ShippingService.Consumers
             _logger.LogInformation(
                 $"CreateShipment received CorrelationId={msg.CorrelationId} OrderId={msg.OrderId} Address={msg.Address}");
 
-            var canShip = !String.IsNullOrWhiteSpace(msg.Address);
+            bool invalidAddress = String.IsNullOrWhiteSpace(msg.Address);
 
-            if (canShip)
+            if (invalidAddress)
             {
                 await context.Publish(new ShipmentFailed(
                     msg.CorrelationId,
@@ -28,7 +28,7 @@ namespace ShippingService.Consumers
                 return;
             }
 
-            await Task.Delay(2500);
+            await Task.Delay(250000);
 
             var tracking = $"TRK-{Guid.NewGuid():N}".Substring(0, 12).ToUpperInvariant();
 
