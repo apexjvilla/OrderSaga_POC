@@ -482,3 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+_compressed/
+notes/
+compress.bat
+compress.ps1
+*.zip
